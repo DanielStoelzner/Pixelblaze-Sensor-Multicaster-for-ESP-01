@@ -54,7 +54,6 @@ typedef struct {
 } __attribute__((packed)) SensorPacket;
 
 WiFiUDP Udp;
-Stream* logger;
 IPAddress serverIP(224,0,0,12);
 SensorPacket dataFrame;
 
@@ -84,44 +83,23 @@ void initDataFrame() {
 //
 // We'll use a UART-based serial port rather than software serial because it
 // theoretically takes some of the load off of the ESP. 
-// Anyway, we create a new software serial port for logging and swap jobs with the UART so it 
-// can speak over GPIO. Data goes out on pin D8 (GPIO15).  If you need to hook up 
-// a receiver, use on pin D7 (GPIO13).
 void setup() {
 
   Serial.begin(BAUD);  
-  Serial.swap(); 
   Serial.setRxBufferSize(1024);  
-  
-// use HardwareSerial0 pins so we can still log to the
-// regular usbserial chips
-  SoftwareSerial* ss = new SoftwareSerial(3, 1);
-  ss->begin(BAUD);
-  ss->enableIntTx(false);
-  logger = ss;
-  logger->println();
 
 // Configure and connect WiFi
   WiFi.mode(WIFI_STA);
   WiFi.begin(_SSID,_PASS);
 
-  logger->print("\n\n\n");
-  logger->println("Sensor Board Multicast Receiver v1.0");
-  logger->println("Connecting to wifi...");
   while(WiFi.status() != WL_CONNECTED) {
-    logger->print('.');
     delay(500);
   }
-
-  logger->println("Connected!");
-  logger->print("IP address: ");
-  logger->println(WiFi.localIP());  
-
+  
   initDataFrame();
 
 // start listening for incoming packets  
   Udp.beginMulticast(WiFi.localIP(), serverIP, LISTEN_PORT);  
-  logger->println("Setup: Success");
 }
 
 // main loop
@@ -131,9 +109,12 @@ void loop() {
   int packetSize = Udp.parsePacket();
   if (packetSize) {
     int len = Udp.read((uint8_t *) &dataFrame, sizeof(dataFrame));
+      if(len > 0){
+        Serial.write((uint8_t *) &dataFrame,sizeof(dataFrame)); 
+
+      }
   }
 
 // send data to Pixelblaze
-  Serial.write((uint8_t *) &dataFrame,sizeof(dataFrame)); 
-
+  
 }
