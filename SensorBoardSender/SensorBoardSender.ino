@@ -7,8 +7,8 @@
  * network via UDP multicast.  
  * 
  * To use: 
- * Connect the ESP82866 and the sensor board to power (3v3) and ground, and connect the sensor board's
- * TX pin to the ESP8266's GPIO13 (D7) pin.
+ * Connect the ESP-01 and the sensor board to power (3v3) and ground, and connect the sensor board's
+ * TX pin to the ESP-01's RX pin.
  * Set the _SSID and _PASS variables for your wifi network.
  * Compile, upload and go!
  * 
