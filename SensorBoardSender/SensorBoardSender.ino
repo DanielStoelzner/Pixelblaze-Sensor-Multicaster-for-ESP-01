@@ -28,7 +28,6 @@
 
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#include <SoftwareSerial.h>
 
 // Serial setup constants
 #define BAUD            115200            // bits/sec coming from sensor board
@@ -53,7 +52,6 @@ typedef struct {
 
 // Global variables
 WiFiUDP Udp;
-Stream* logger;
 IPAddress serverIP(224,0,0,12);  // multicast address. 
 SensorPacket dataFrame;
 
@@ -100,40 +98,23 @@ bool readMagicWord() {
 }
 
 // setup()
-// Create software serial port for logging and swap UART so we can 
-// use it to read from sensor board and take some load off the CPU.
-// Pinouts are: RX=GPIO13(D7)  TX=GPIO15
+// 
+// 
+// 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 
   Serial.begin(BAUD);  
-  Serial.swap(); 
   delay(250);
-  Serial.setRxBufferSize(1024);  
-  
-// set up software serial for USB port logger 
-  SoftwareSerial* ss = new SoftwareSerial(3, 1);
-  ss->begin(BAUD);
-  ss->enableIntTx(false);
-  logger = ss;
-  logger->println();
+  Serial.setRxBufferSize(1024);
 
 // Configure and connect WiFi
   WiFi.mode(WIFI_STA);
   WiFi.begin(_SSID,_PASS);
-
-  logger->print("\n\n\n");
-  logger->println("Sensor Board Multicast Sender v1.0");
-  logger->println("Connecting to wifi...");
+    
   while(WiFi.status() != WL_CONNECTED) {
-    logger->print('.');
     delay(500);
   }
-
-  logger->println("Connected!");
-  logger->print("IP address: ");
-  logger->println(WiFi.localIP());  
-  logger->printf("Sensor Board Multicast Sender running on port on %d ",_PORT);
 
   // "magic string" that identifies a sensor board packet
   dataFrame.headerTag[0] = 'S';
@@ -142,8 +123,6 @@ void setup() {
   dataFrame.headerTag[3] = '.';
   dataFrame.headerTag[4] = '0';    
   dataFrame.headerTag[5] = 0;      
-
-  logger->println("Setup: Success");
 }
 
 // main loop
