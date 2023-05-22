@@ -8,8 +8,7 @@
  * can support any number of receivers on a network. 
  * 
  * To use: 
- * Connect the ESP82866 to the Pixelblaze's power (3v3) and ground pins, and connect GPIO15 (D8) on
- * on the ESP8266 to the RX pin on the Pixelblaze's expansion header.
+ * Connect the ESP-01 to the Pixelblaze's power (3v3) and ground pins, and connect TX on the ESP-01 to the RX pin on the Pixelblaze's expansion header.
  * Set the _SSID and _PASS variables for your wifi network.
  * Compile, upload and go!
  * 
@@ -29,7 +28,6 @@
 
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
-#include <SoftwareSerial.h>
 
 // Data transfer setup
 #define BAUD            115200    // serial data rate
@@ -110,11 +108,8 @@ void loop() {
   if (packetSize) {
     int len = Udp.read((uint8_t *) &dataFrame, sizeof(dataFrame));
       if(len > 0){
+        // send data to Pixelblaze
         Serial.write((uint8_t *) &dataFrame,sizeof(dataFrame)); 
-
       }
   }
-
-// send data to Pixelblaze
-  
 }
