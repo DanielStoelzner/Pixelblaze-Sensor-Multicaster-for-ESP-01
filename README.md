@@ -1,3 +1,12 @@
+Note: This fork is a feature-reduced version of the original so that it works with the even cheaper and smaller ESP-01 boards.
+
+On the sender side the Senso-Board's TX pin has to be connected to the RX pin of the ESP-01.
+On the Receiver side the Pixelblaxe's RX pin has to be connected to the TX pin of the ESP-01.
+
+# Original Description: #
+
+
+
 ## sensor-multicaster
 
 Allows you to use a single Pixelblaze Sensor board and a handful of inexpensive ESP8266s to send
